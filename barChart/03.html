@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+</head>
+<body>
+<style>
+    svg {
+        border: 1px solid #000000;
+    }
+    rect {
+        stroke: SteelBlue;
+        stroke-width: 2;
+        fill: LightSteelBlue  ;
+    }
+
+    rect:hover {
+        fill: SteelBlue ;
+    }
+</style>
+<svg width="315" height="245"></svg>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+    var config = { columnWidth: 45, columnGap: 5, margin: 10, height: 235 };
+
+    d3.json("salarioMedioEuropa.json", function(error, json) {
+        if (error) {
+            return console.warn(error);
+        }
+        console.log(json);
+        renderData(json);
+    });
+
+    function renderData(datos){
+        d3.select("svg")
+            .selectAll("rect")
+            .data(datos)
+          .enter().append("rect")
+            .attr("width", config.columnWidth)
+            .attr("x", function(d,i) { return config.margin + i * (config.columnWidth + config.columnGap) })
+            .attr("y", function(d,i) { return config.height - d.salarioMedio })
+            .attr("height", function(d,i) { return d.salarioMedio })
+            .attr("data-nombre", function(d,i) { return d.nombre })
+            .attr("data-salarioMerdio", function(d,i) { return d.salarioMedio })
+    }
+</script>
+</body>
+</html>

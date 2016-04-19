@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+</head>
+<body>
+<style>
+    svg {
+        border: 1px solid #000000;
+    }
+    rect {
+        stroke: SteelBlue;
+        stroke-width: 2;
+        fill: LightSteelBlue  ;
+    }
+
+    rect:hover {
+        fill: SteelBlue ;
+    }
+</style>
+<svg width="795" height="245"></svg>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+    var config = { columnWidth: 20, columnGap: 5, margin: 10, height: 235 };
+    var ES_es = d3.locale ({
+        "decimal": ",",
+        "thousands": ".",
+        "grouping": [3],
+        "currency": ["", " €"],
+        "dateTime": "%a %b %e %X %Y",
+        "date": "%d/%m/%Y",
+        "time": "%H:%M:%S",
+        "periods": ["AM", "PM"],
+        "days": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        "shortDays": ["Dom", "Lun", "Mar", "Mi", "Jue", "Vie", "Sab"],
+        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        "shortMonths": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+    });
+    var _format = ES_es.numberFormat("$,0f");
+
+
+
+    d3.json("salarioMedioEuropa.json", function(error, json) {
+        if (error) {
+            return console.warn(error);
+        }
+        renderData(json);
+    });
+
+    function renderData(datos){
+        var SALARIO_MAX = d3.max(datos, function(d) { return +d.salarioMedio; });
+        var normalizeY = d3.scale.linear()
+                            .domain([0, SALARIO_MAX])
+                            .range([0, config.height-10]);
+
+        //var _format = d3.format("$,.2f");
+
+
+        d3.select("svg")
+            .selectAll("rect")
+            .data(datos)
+          .enter().append("rect")
+            .attr("width", config.columnWidth)
+            .attr("x", function(d,i) { return config.margin + i * (config.columnWidth + config.columnGap) })
+            .attr("y", function(d,i) { return config.height - normalizeY(d.salarioMedio) })
+            .attr("height", function(d,i) { return normalizeY(d.salarioMedio) })
+            .attr("data-nombre", function(d,i) { return d.nombre })
+            .attr("data-salarioMerdio", function(d,i) { return _format(+d.salarioMedio) })
+    }
+
+
+</script>
+</body>
+</html>
